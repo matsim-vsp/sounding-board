@@ -37,7 +37,7 @@ export default {
           //fixedrange: window.innerWidth < 700,
           fixedrange: true,
           range: [-1.0, 0.2],
-          title: '% Diff',
+          title: '',
         } as any,
         plot_bgcolor: '#f8f8f8',
         paper_bgcolor: '#f8f8f8',

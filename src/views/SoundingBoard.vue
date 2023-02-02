@@ -23,10 +23,12 @@
     .metrics
       .metric(v-for="metric,i in metrics")
         h4.metric-title {{ metric.title }}
-        .metric-value {{ formattedValue(displayedValues[i]) }} %
-        bar-chart(
-          :data="[{x: [' '], y: [displayedValues[i]-1], type: 'bar'}]"
-        )
+        .image(v-if="metric.imageComponents")
+          img(:src="`${PUBLIC_SVN}/${runId}/` + generatedImageSrc(metric)")
+          p {{ generatedImageSrc(metric)  }}
+        .chart(v-else)
+          .metric-value {{ formattedValue(metric, displayedValues[i]) }}
+          bar-chart(:data="[{x: [' '], y: [displayedValues[i]-1], type: 'bar'}]")
 
   .configurator
     h2 {{ $t('settings')  }}
@@ -78,10 +80,6 @@ import 'vue-slider-component/theme/default.css'
 
 import BarChart from '@/components/BarChart.vue'
 
-// const PUBLIC_SVN = 'http://localhost:8000'
-const PUBLIC_SVN =
-  'https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/projects/sounding-board'
-
 type ScenarioYaml = {
   data: string
   title?: string
@@ -103,6 +101,8 @@ type ScenarioYaml = {
       title?: string
       title_en?: string
       title_de?: string
+      showPercent?: boolean
+      imageComponents?: string
     }
   }
   presets: any
@@ -110,6 +110,10 @@ type ScenarioYaml = {
 
 @Component({ components: { BarChart, VueSlider }, props: {} })
 export default class VueComponent extends Vue {
+  // private PUBLIC_SVN = 'http://localhost:8001'
+  private PUBLIC_SVN =
+    'https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/projects/sounding-board'
+
   private runId = ''
   private selectedScenario = ''
 
@@ -148,10 +152,14 @@ export default class VueComponent extends Vue {
     }
   }
 
-  private formattedValue(v: number) {
+  private formattedValue(metric: any, v: number) {
+    // if showPercent is not in config yaml, just use raw number
+    if (!metric.showPercent) return v.toFixed(2)
+
+    // percent mode: scale the values relative to 1.0
     const percent = 100 * (v - 1)
-    const sign = percent < 0 ? '' : '+'
-    return sign + percent.toFixed(0)
+    const sign = percent <= 0 ? '' : '+'
+    return `${sign}${percent.toFixed(0)}%`
   }
 
   private setPreset(preset: string) {
@@ -206,7 +214,7 @@ export default class VueComponent extends Vue {
     this.badPage = false
     this.runId = this.$route.params.runId
 
-    const url = `${PUBLIC_SVN}/${this.runId}/config.yaml`
+    const url = `${this.PUBLIC_SVN}/${this.runId}/config.yaml`
     console.log({ url })
 
     try {
@@ -234,20 +242,22 @@ export default class VueComponent extends Vue {
     for (const column of Object.keys(this.yaml.outputColumns)) {
       const config = this.yaml.outputColumns[column]
       const metric = {
+        showPercent: config.showPercent,
+        imageComponents: config.imageComponents,
         column,
+        value: '...',
         title:
           this.lang === 'de'
             ? config.title_de || config.title || config.title_en || column
             : config.title_en || config.title || config.title_de || column,
-        value: '...',
       }
       this.metrics.push(metric)
     }
-    console.log(21, this.metrics)
+    // console.log(21, this.metrics)
   }
 
   private async loadDataset() {
-    const datasetFilename = `${PUBLIC_SVN}/${this.runId}/${this.yaml.data}`
+    const datasetFilename = `${this.PUBLIC_SVN}/${this.runId}/${this.yaml.data}`
 
     try {
       const rawData = (await fetch(datasetFilename).then(response => response.text())) as any
@@ -382,6 +392,9 @@ export default class VueComponent extends Vue {
     // otherwise, animate the change in values
     let maxDiff = 0
     this.metrics.forEach((metric, i) => {
+      // some cells don't have numeric values
+      if (metric.value === undefined) return
+
       const diff = metric.value - this.displayedValues[i]
       const step = this.displayedValues[i] + diff * 0.2
       this.displayedValues[i] = step
@@ -389,6 +402,7 @@ export default class VueComponent extends Vue {
       const pctDiff = Math.abs((this.displayedValues[i] - metric.value) / metric.value)
       maxDiff = Math.max(maxDiff, pctDiff)
     })
+
     this.displayedValues = [...this.displayedValues]
 
     if (maxDiff < 0.001) {
@@ -398,6 +412,20 @@ export default class VueComponent extends Vue {
     } else {
       setTimeout(this.animateTowardNewValues, 8.333)
     }
+  }
+
+  private generatedImageSrc(metric: any) {
+    let filename = metric.column + '_'
+    const imageComponents = metric.imageComponents.split(',').map((c: string) => c.trim()) as any[]
+
+    const values = [] as any[]
+    imageComponents.forEach(column => {
+      const metric = this.metrics.find(m => m.column == column)
+      values.push(metric?.value)
+    })
+    const combinedKey = values.join('_')
+    filename += combinedKey + '.png'
+    return filename
   }
 }
 </script>
