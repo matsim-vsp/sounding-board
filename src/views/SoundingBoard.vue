@@ -11,11 +11,10 @@
   .presets(v-if="Object.keys(presets).length")
     h2 {{ $t('scenarios')  }}
     b-button.is-huge.factor-option(
-          v-for="preset in Object.keys(presets)"
-          :class="preset == currentPreset ? 'is-success' : ''"
-          @click="setPreset(preset)"
-        ) {{ presets[preset].title }}
-
+        v-for="preset in Object.keys(presets)" :key="preset"
+        :class="preset == currentPreset ? 'is-success' : ''"
+        @click="setPreset(preset)"
+    ) {{ presets[preset].title }}
 
   .results
     h2 {{ $t('results')  }}
@@ -34,13 +33,17 @@
     h2 {{ $t('settings')  }}
 
     .factors
-      .factor(v-for="factor in Object.keys(yaml.inputColumns)")
-        h4.metric-title {{ factorTitle[factor]  }}
-        b-button.is-small.factor-option(
-          v-for="option of factors[factor]"
-          :class="option == currentConfiguration[factor] ? 'is-danger' : ''"
-          @click="setFactor(factor, option)"
-        ) {{ option }}
+      .factor(v-for="factor in Object.keys(yaml.inputColumns)" :key="factor")
+        .boxx
+          .boxleft.flex1
+            h4.metric-title {{ factorTitle[factor]  }}
+            p {{ factorDescription[factor]  }}
+          .boxright.flex1
+            b-button.is-small.factor-option(
+              v-for="option of factors[factor]"
+              :class="option == currentConfiguration[factor] ? 'is-danger' : ''"
+              @click="setFactor(factor, option)"
+            ) {{ option }}
 
 </template>
 
@@ -56,7 +59,7 @@
     explore-scenarios: 'Explore typical scenarios'
     try-combos: '...or try different combinations below.'
     remarks: 'Remarks'
-    scenarios: 'Typical Scenarios'
+    scenarios: 'Preset Scenarios'
   de:
     results: 'Ergebnis'
     settings: 'Experiment conditions'
@@ -94,6 +97,9 @@ type ScenarioYaml = {
       title?: string
       title_en?: string
       title_de?: string
+      description?: string
+      description_en?: string
+      description_de?: string
     }
   }
   outputColumns: {
@@ -134,6 +140,7 @@ export default class VueComponent extends Vue {
 
   private factors: { [measure: string]: any } = {}
   private factorTitle: any = {}
+  private factorDescription: any = {}
 
   private currentConfiguration: { [measure: string]: { title: string; value: any } } = {}
   private displayedValues: any[] = []
@@ -189,10 +196,10 @@ export default class VueComponent extends Vue {
   }
 
   private mounted() {
-    console.log({ locale: this.$i18n.locale })
-
     this.lang = this.$i18n.locale.indexOf('de') > -1 ? 'de' : 'en'
+    console.log({ locale: this.$i18n.locale })
     console.log({ lang: this.lang })
+
     this.buildPageForURL()
   }
 
@@ -300,9 +307,14 @@ export default class VueComponent extends Vue {
         this.lang == 'de'
           ? definition.title_de || definition.title || definition.title_en || factor
           : definition.title_en || definition.title || definition.title_de || factor
+      this.factorDescription[factor] =
+        this.lang == 'de'
+          ? definition.description_de || definition.description || definition.description_en || ''
+          : definition.description_en || definition.description || definition.description_de || ''
     }
 
     this.factors = Object.assign({}, this.factors)
+    console.log(70, this.factorDescription)
   }
 
   private buildPresets() {
@@ -539,13 +551,20 @@ li.notes-item {
   padding: 1rem 2rem 2rem 2rem;
 }
 
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 12rem);
+  gap: 1rem;
+}
+
 .metric {
   background-color: white;
-  width: max-content;
+  width: 100%;
   padding: 1rem;
   margin: 0.5rem;
   display: flex;
   flex-direction: column;
+  border: 1px solid blue;
 }
 
 .metric-value {
@@ -564,15 +583,16 @@ li.notes-item {
   text-transform: none;
 }
 
-.factors,
-.metrics {
-  display: flex;
+.factors {
+  display: grid;
+  // grid-template-columns: repeat(1fr, 3);
 }
 
 .factor {
   padding: 1rem;
   background-color: white;
-  margin: 0.5rem;
+  margin: 0.5rem 0;
+  border: 1px solid blue;
   // display: flex;
   // flex-direction: column;
 }
@@ -582,6 +602,22 @@ li.notes-item {
   // background-color: #cc3;
   margin: 0.25rem;
   cursor: pointer;
+}
+
+.boxx {
+  display: flex;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.boxleft {
+  margin-right: 1rem;
+}
+
+.image {
+  // width: 5rem;
 }
 
 @media only screen and (max-width: 850px) {
