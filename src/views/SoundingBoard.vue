@@ -38,10 +38,12 @@
             .metric-value.metric-value-costs(:class="[displayedValues[4] < -0.5 ? 'red-number' : '', ,displayedValues[4] >= 0.5 ? 'green-number' : '']") {{ formattedValue(displayedValues[4], true) }} €
             h4.metric-title(:style="{ 'margin-top': '0.5rem' }") {{ metrics[5].title }}
             .metric-value.metric-value-costs(:class="[displayedValues[5] < -0.5 ? 'red-number' : '', ,displayedValues[5] >= 0.5 ? 'green-number' : '']") {{ formattedValue(displayedValues[5], true) }} €
+          .metric 
+            car-viz.car-viz-styles(v-if="!title.startsWith('Güter')" :style="{scale: 2}" :numberOfParkingCars="numberOfParkingCars" :numberOfDrivingCars="numberOfDrivingCars" :plotWidth="plotWidth" :plotHeight="plotHeight")  
 
           
-    .right-results
-      car-viz.car-viz-styles(v-if="!title.startsWith('Güter')" :style="{scale: 2}" :numberOfParkingCars="numberOfParkingCars" :numberOfDrivingCars="numberOfDrivingCars" :plotWidth="plotWidth" :plotHeight="plotHeight")
+    // .right-results
+    //   car-viz.car-viz-styles(v-if="!title.startsWith('Güter')" :style="{scale: 2}" :numberOfParkingCars="numberOfParkingCars" :numberOfDrivingCars="numberOfDrivingCars" :plotWidth="plotWidth" :plotHeight="plotHeight")
 
   .configurator
     h2.section-title {{ $t('settings') }}
@@ -103,7 +105,7 @@ import MarkdownIt from 'markdown-it'
 import Papaparse from 'papaparse'
 import { Route } from 'vue-router'
 import VueSlider from 'vue-slider-component'
-import { debounce } from 'debounce'
+//import { debounce } from 'debounce'
 import YAML from 'yaml'
 import 'vue-slider-component/theme/default.css'
 import BarChart from '@/components/BarChart.vue'
@@ -195,37 +197,36 @@ export default class VueComponent extends Vue {
     }
   }
 
-  private handleResize = debounce(this.realHandleResize, 250)
+  //private handleResize = debounce(this.realHandleResize, 250)
 
   private plotHeight = 1
   private plotWidth = 1
 
-  private async realHandleResize(c: Event) {
-    this.updateWidth()
-  }
+  // private async realHandleResize(c: Event) {
+  //   this.updateWidth()
+  // }
 
   private updateWidth() {
-    const firstPlot = document.getElementsByClassName('metric')[0] as HTMLElement
-
-    if (firstPlot) {
-      if (!(Math.abs(firstPlot.clientHeight - this.plotHeight) < 20))
-        this.plotHeight = firstPlot.clientHeight
-      if (!(Math.abs(firstPlot.clientWidth - this.plotWidth) < 20))
-        this.plotWidth = firstPlot.clientWidth
-
-      const leftSide = document.getElementsByClassName('left-results')[0] as HTMLElement
-      if (leftSide) {
-        if (!this.title.startsWith('Güter'))
-          leftSide.style.width = 'calc(100% - ' + (this.plotWidth - 0) + 'px)'
-        else leftSide.style.width = 'calc(100%)'
-      }
-    }
+    console.log('Update')
+    //const firstPlot = document.getElementsByClassName('metric')[0] as HTMLElement
+    // if (firstPlot) {
+    //   if (!(Math.abs(firstPlot.clientHeight - this.plotHeight) < 20))
+    //     this.plotHeight = firstPlot.clientHeight
+    //   if (!(Math.abs(firstPlot.clientWidth - this.plotWidth) < 20))
+    //     this.plotWidth = firstPlot.clientWidth
+    //   // const leftSide = document.getElementsByClassName('left-results')[0] as HTMLElement
+    //   // if (leftSide) {
+    //   //   if (!this.title.startsWith('Güter'))
+    //   //     leftSide.style.width = 'calc(100% - ' + (this.plotWidth - 0) + 'px)'
+    //   //   else leftSide.style.width = 'calc(100%)'
+    //   // }
+    // }
   }
 
   private updateSize() {
-    window.setInterval(() => {
-      this.updateWidth()
-    }, 1000)
+    // window.setInterval(() => {
+    //   this.updateWidth()
+    // }, 1000)
   }
 
   private formattedValue(v: number, isCosts: boolean) {
@@ -278,8 +279,8 @@ export default class VueComponent extends Vue {
     this.lang = this.$i18n.locale.indexOf('de') > -1 ? 'de' : 'en'
     console.log({ lang: this.lang })
     this.buildPageForURL()
-    window.addEventListener('resize', this.handleResize)
-    this.updateSize()
+    //window.addEventListener('resize', this.handleResize)
+    //this.updateSize()
   }
 
   private async buildPageForURL() {
@@ -649,7 +650,8 @@ li.notes-item {
 }
 
 .left-results {
-  width: calc(100% - 170px);
+  //width: calc(100% - 170px);
+  width: 100%;
 }
 
 .right-results {
@@ -668,14 +670,27 @@ li.notes-item {
 
 .metric {
   background-color: white;
-  padding: 1rem;
-  margin: 0.5rem;
+  //width: max-content;
+  //width: 320px;
+  //padding: 1rem;
+  //margin: 0.5rem;
   display: flex;
   flex-direction: column;
-  min-width: 100px;
+  //min-width: 100px;
   flex: 1;
-  height: fit-content;
+  //height: fit-content;
+  //border: 1px solid black;
+  align-self: stretch;
+  //justify-content: center;
+}
+
+.metrics .metric {
   border: 1px solid black;
+  padding: 1rem;
+}
+.metrics .metric:last-of-type {
+  border: none;
+  padding: 0rem;
 }
 
 .metric-value {
@@ -725,8 +740,17 @@ li.notes-item {
 }
 .metrics {
   display: flex;
+  //flex-wrap: wrap;
   flex-wrap: nowrap;
+  //justify-content: space-around;
   height: fit-content;
+  //justify-content: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-content: center;
+  gap: 20px;
 }
 
 .metric-title {
@@ -772,6 +796,12 @@ li.notes-item {
 
 .subdescription {
   margin-left: 2rem;
+}
+
+.temp-box {
+  width: 100%;
+  height: 100%;
+  background-color: red;
 }
 
 @media only screen and (max-width: 1440px) {
@@ -904,10 +934,6 @@ li.notes-item {
 
   .results {
     padding-bottom: 0;
-  }
-
-  .calc-margin {
-    margin-bottom: -2rem;
   }
 
   .right-results {
