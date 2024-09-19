@@ -100,7 +100,7 @@ massnahme <- "Parkraum"
 
 auspraegung <- "BesucherFossilTeuer_alleAnderenPreiswert"
 
-# Erster Schritt: Parkgebühren.  Der betroffene Teil (10%) wird gefünftelt; daraus insgesamt: Auto geht von 20% auf 12%.
+# Erster Schritt: Parkgebühren.  Annahme: Nur 1/2 der Fahrten sind vom öffentlichen Parken betroffen.  Der betroffene Teil (1/2 von 20% = 10%) wird gefünftelt; daraus insgesamt: Auto geht von 20% auf 12%.
 
 # Zweiter Schritt: Möglichkeit E-Auto.  (b) Von obigen 8% wechseln 4 wieder zurück.  Von den anderen 2% fossiles Auto kaufen sich 2/3 ein el. Auto.
 
