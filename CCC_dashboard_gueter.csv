@@ -1,0 +1,4 @@
+"Stadt","CO2","Kosten","traffic","parking","KostenProKopf","KostenProErwachsener"
+"base",1,0,1,1,0,0
+"CO2Steuer",0.5,1.5e+08,0.98,1.05,39473684.2105263,49019607.8431373
+"zeroEmissionsZone",0,0,0.96,1.13,0,0
