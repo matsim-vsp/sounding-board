@@ -1,17 +1,21 @@
-#changed paths - kreuschner-mar2025
-export DASHBOARD_PATH=~/git/public-svn/shared/sounding-board/ccc/
-export CURRENT_PATH=~/git/public-svn/shared/sounding-board/current/
+# Makefile - kreuschner-mar2025
+
+BERLIN2035_PATH := $(HOME)/git/public-svn/shared/sounding-board/berlin-2035/
+BERLIN2045_PATH := $(HOME)/git/public-svn/shared/sounding-board/berlin-2045/
+SVN := /opt/homebrew/bin/svn
+
+.PHONY: default current
 
 default:
-	Rscript --default-packages=tidyr --verbose CCC_dashboard_privaterPersonenverkehr_MK.R
-	#Rscript --default-packages=tidyr --verbose CCC_dashboard_gueterverkehr.R
-	#head -11 CCC_dashboard_gueter.csv
-	-rm ${DASHBOARD_PATH}/CCC_dashboard_privaterPersonenverkehr_MK.csv
-	mv CCC_dashboard_privaterPersonenverkehr_MK.csv ${DASHBOARD_PATH}
-	#cd ${DASHBOARD_PATH} ; /opt/homebrew/bin/svn update ;/opt/homebrew/bin/svn commit -m "commit new version"
+	@echo "Running Berlin 2035 pipeline..."
+	-rm -f $(BERLIN2035_PATH)berlin-2035-dashboard-v1.0.csv
+	Rscript --default-packages=tidyr --verbose berlin2035-dashboard-privaterPersonenverkehr-v1.0.R
+	#mv berlin-2035-dashboard-v1.0.csv $(BERLIN2035_PATH)
+	cd $(BERLIN2035_PATH) && $(SVN) update && $(SVN) commit -m "commit new version"
 
 current:
-	Rscript --default-packages=tidyr --verbose current_dashboard_privaterPersonenverkehr_KN.R
-	-rm ${CURRENT_PATH}/current-dashboard-v1.1.csv
-	mv current-dashboard-v1.1.csv ${CURRENT_PATH}
-	cd ${CURRENT_PATH} ; /opt/homebrew/bin/svn update ;/opt/homebrew/bin/svn commit -m "commit new version"
+	@echo "Running Berlin 2045 pipeline..."
+	Rscript --default-packages=tidyr --verbose berlin2045-dashboard-privaterPersonenverkehr-v1.0.R
+	-rm -f $(BERLIN2045_PATH)berlin-2045-dashboard-v1.0.csv
+	mv berlin-2045-dashboard-v1.0.csv $(BERLIN2045_PATH)
+	cd $(BERLIN2045_PATH) && $(SVN) update && $(SVN) commit -m "commit new version"
