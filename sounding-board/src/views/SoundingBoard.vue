@@ -83,7 +83,7 @@
     .button.submit-button(@click="saveConditions") &#x2705; Stimme abgeben
     .voted-text(v-if="showVotedText") <span style="color:#77b255">Sie haben abgestimmt.</span> Wenn Sie nochmal abstimmen möchten, wird Ihre erste Stimme ersetzt.
   .vote-disclaimer *Wenn die Seite aktualisiert wird, bevor Sie Ihre Stimme abgeben, wählen Sie bitte Ihre Bedingungen erneut aus (auch wenn sie bereits gewählt sind)
-           
+
     //- .right-results
     //-   car-viz.car-viz-styles(:style="{scale: 2}" :numberOfParkingCars="numberOfParkingCars" :numberOfDrivingCars="numberOfDrivingCars" :plotWidth="plotWidth" :plotHeight="plotHeight")
 
@@ -139,11 +139,7 @@ import 'vue-slider-component/theme/default.css'
 import BarChart from '@/components/BarChart.vue'
 import CarViz from '@/components/CarViz.vue'
 import TopNavBar from '@/components/TopNavBar.vue'
-import { options } from 'marked'
-
-// const PUBLIC_SVN = 'http://localhost:8000'
-const PUBLIC_SVN =
-  'https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/projects/sounding-board'
+import { PUBLIC_SVN} from '@/Globals'
 
 type ScenarioYaml = {
   data: string
@@ -1645,13 +1641,13 @@ button.is-huge.factor-option.preset-buttons:hover {
   }
 }
 
-@media only screen and (min-width: 1280px) and (max-width: 1440px) { 
+@media only screen and (min-width: 1280px) and (max-width: 1440px) {
   .metric-title {
     font-size: 1.2rem;
   }
 }
 
-@media only screen and (min-width: 1560px) { 
+@media only screen and (min-width: 1560px) {
   .metric-title {
     font-size: 1.4rem;
   }

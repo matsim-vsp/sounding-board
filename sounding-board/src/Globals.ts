@@ -1,6 +1,4 @@
-export const PUBLIC_SVN =
-  'https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/episim/'
-//'http://localhost:8000/'
+export const PUBLIC_SVN = 'https://svn.vsp.tu-berlin.de/repos/public-svn/shared/sounding-board/'
 
 export enum ColorScheme {
   LightMode = 'light',
