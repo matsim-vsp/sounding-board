@@ -199,7 +199,7 @@ A voting server is also available but is usually disabled except for public meet
 
 The voting server is a Python Flask App. The provided Dockerfile builds the app behind an NGINX and Gunicorn web server (as Flask is not supposed to be directly accessible from the internet and is generally run behind Gunicorn).
 
-We used [fly.io](https://fly.io/) as) as the server infrastructure because they provide a generous free tier and it was super easy to spin up the server for this task.
+We used [fly.io](https://fly.io/) as the server infrastructure because they provide a generous free tier and it was super easy to spin up the server for this task.
 
 Explaining Flask is beyond the scope of this README, but the code is all in `RunServer.py` and is extremely brief; it simply records the chosen measure decisions for each user into a local SQLite database file.
 
