@@ -182,13 +182,6 @@ export default class VueComponent extends Vue {
   private runId = ''
   private config = ''
   private selectedScenario = ''
-  private allowedConfigs = [
-    'config',
-    'config_gueter',
-    'config_kommerziell',
-    'config_sonder',
-    'config_privaterPersonenverkehr',
-  ]
 
   private yaml: ScenarioYaml = {
     data: '',
@@ -455,7 +448,7 @@ export default class VueComponent extends Vue {
     this.runId = this.$route.params.runId
     this.config = this.$route.params.config
 
-    if (!this.allowedConfigs.includes(this.config)) this.config = 'config'
+    if (!this.config) this.config = 'config'
 
     const url = `${PUBLIC_SVN}/${this.runId}/${this.config}.yaml`
     console.log({ url })
