@@ -1,7 +1,7 @@
 <template lang="pug">
 #sounding-board
 
-  top-nav-bar
+  top-nav-bar(:title="title || 'Sounding Board — Berlin'")
 
   .heading
     .sounding-board-description(v-if="yaml.description" v-html="yaml.description")
@@ -972,8 +972,9 @@ li.notes-item {
 }
 
 .header-description-text {
+  border-bottom: 1px solid #888;
   margin-bottom: 10;
-  text-align: left;
+  text-align: center;
 }
 
 .header-factor-description {
@@ -1129,6 +1130,8 @@ li.notes-item {
   display: grid;
   // flex-wrap: wrap;
   grid-template-columns: 50% 50%;
+  gap: 1rem;
+  margin-right: 1rem;
 }
 
 .factor {
@@ -1251,7 +1254,7 @@ li.notes-item {
 .factor {
   padding: 0.5rem;
   background-color: white;
-  margin: 0.5rem;
+  // margin: 0.5rem;
   max-width: 100%;
   display: grid;
 }
@@ -1777,16 +1780,29 @@ button.is-huge.factor-option.preset-buttons:hover {
 
 @media only screen and (max-width: 640px) {
   .banner {
-    padding: 2rem 1rem;
+    padding: 2rem 0rem;
   }
 
   .center-area {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
   }
 
   .option-groups {
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .heading,
+  .header-description,
+  .presets,
+  .configurator {
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+  }
+
+  .factor,
+  .charts {
+    padding: 0.25rem;
   }
 }
 </style>

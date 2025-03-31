@@ -1,12 +1,12 @@
 <template lang="pug">
 nav.navbar.is-link(role="navigation" aria-label="main navigation")
   .navbar-brand
-    p.navbar-item(:style="{color: 'white'}") Sounding Board - Berlin
+    p.navbar-item(:style="{color: 'white'}") {{ title }}
 
 
   .navbar-end
-    img(src="@/assets/images/vsp-logo-white.png" width=300)
-        
+    img(src="@/assets/images/vsp-logo-white.png" width=275)
+
 </template>
 
 <script lang="ts">
@@ -14,6 +14,8 @@ import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
 
 @Component({})
 export default class VueComponent extends Vue {
+  @Prop() private title: string
+
   private isBurgerActive = false
   private isDropdownActive = false
 
@@ -35,7 +37,8 @@ export default class VueComponent extends Vue {
 .navbar.is-link {
   background-color: #c40d1e;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.4rem;
+  padding-left: 18px;
 }
 
 #nav a.router-link-exact-active {
@@ -56,12 +59,12 @@ export default class VueComponent extends Vue {
 }
 
 .navbar-end {
-  margin-right: 0.75em;
+  margin: 0.5rem 1.25rem 0.5rem 0;
 }
 
 .navbar {
-    min-height: 4rem!important;
-  }
+  min-height: 4rem !important;
+}
 
 .navbar,
 .navbar-menu,
@@ -92,6 +95,7 @@ export default class VueComponent extends Vue {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
+    padding: 0 0;
   }
 
   .navbar-end {
