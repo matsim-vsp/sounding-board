@@ -8,11 +8,7 @@
 
   .header-description
     .header-description-subtitle(v-for="item in yaml.descriptionOutput")
-      //- .headers-hoverText
-      //-   .headers-top
-      //-     h4.metric-title-factor(:style="{'margin-left' : '0'}") {{ item.title }}
-      //-     p.header-factor-description {{item.description}}
-      p.header-description-text(v-html="'<b>' + item.title")
+      p.header-description-text(v-html="`<b>${item.title}</b>`")
       .header-sub-items
         .header-images
           img(:src="getImagePath(item.title)")
@@ -22,10 +18,10 @@
     h2.section-title {{ $t('scenarios')  }}
     b-button.is-huge.factor-option.preset-buttons.preset-option(
       v-for="preset in orderedPresets"
+      :key="preset.key"
       :class="preset.key == currentPreset ? 'is-success' : ''"
       @click="setPreset(preset.key)"
-        ) {{ preset.title }}
-
+    ) {{ preset.title }}
 
   .configurator
     h2.section-title {{ $t('settings') }}
@@ -41,6 +37,7 @@
           .buttons-div
             b-button.is-small.factor-option.expand(
               v-for="option of factors[key]"
+              v-if="yaml.buttonLabels && option in yaml.buttonLabels"
               :key="option"
               :class="option == currentConfiguration[key] ? 'is-danger' : ''"
               @click="setFactor(key, option)"
@@ -49,12 +46,6 @@
           .conditionTitle {{ textBlocks[key].description}}
           .conditionDescriptionTitle Information:
           .conditionDescription {{ textBlocks[key].subdescriptions[currentConfiguration[key]]}}
-
-    //-   .button.reveal-button(@click="showResults") Ergebnisse anzeigen
-    //-   .button.hide-button(@click="hideResults") Ergebnisse ausblenden
-    //-   .error-text(v-if="!voted && resultsRequested") Sie müssen erstmal abstimmen
-
-
 
 
   .results(:class="!title.startsWith('Güter') ? 'calc-margin' : ''")
@@ -83,16 +74,6 @@
     .button.submit-button(@click="saveConditions") &#x2705; Stimme abgeben
     .voted-text(v-if="showVotedText") <span style="color:#77b255">Sie haben abgestimmt.</span> Wenn Sie nochmal abstimmen möchten, wird Ihre erste Stimme ersetzt.
   .vote-disclaimer *Wenn die Seite aktualisiert wird, bevor Sie Ihre Stimme abgeben, wählen Sie bitte Ihre Bedingungen erneut aus (auch wenn sie bereits gewählt sind)
-
-    //- .right-results
-    //-   car-viz.car-viz-styles(:style="{scale: 2}" :numberOfParkingCars="numberOfParkingCars" :numberOfDrivingCars="numberOfDrivingCars" :plotWidth="plotWidth" :plotHeight="plotHeight")
-
-  //- .description
-  //-   h2.section-title {{ $t('description') }}
-  //-   .description-subtitle(v-for="item in yaml.descriptionInput")
-  //-     p.description-text(:style="{'font-weight' : 'bold'}") {{ item.title + ':' }} {{ item.description }}
-  //-     .subdescription(v-for="sub in item.subdescriptions")
-  //-       p.description-text {{ sub }}
 
 
 </template>
@@ -139,7 +120,7 @@ import 'vue-slider-component/theme/default.css'
 import BarChart from '@/components/BarChart.vue'
 import CarViz from '@/components/CarViz.vue'
 import TopNavBar from '@/components/TopNavBar.vue'
-import { PUBLIC_SVN} from '@/Globals'
+import { PUBLIC_SVN } from '@/Globals'
 
 type ScenarioYaml = {
   data: string
@@ -192,7 +173,7 @@ export default class VueComponent extends Vue {
     presets: {},
   }
 
-  private serverURL = "https://vsp-lndw-sounding-board.fly.dev/"
+  private serverURL = 'https://vsp-lndw-sounding-board.fly.dev/'
   // private serverURL = "http://127.0.0.1:4999/"
 
   private badPage = false
@@ -229,8 +210,8 @@ export default class VueComponent extends Vue {
     timeStamp: null,
   }
 
-  private voted = false;
-  private showVotedText = false;
+  private voted = false
+  private showVotedText = false
 
   private resultsRequested = false
 
@@ -249,7 +230,6 @@ export default class VueComponent extends Vue {
 
   private plotHeight = 1
   private plotWidth = 1
-
 
   private async realHandleResize(c: Event) {
     this.updateWidth()
@@ -277,10 +257,10 @@ export default class VueComponent extends Vue {
 
   private getImagePath(title) {
     try {
-      return require(`../assets/images/${title}.png`);
+      return require(`../assets/images/${title}.png`)
     } catch (e) {
-      console.error(`Image not found: ../assets/images/${title}.png`);
-      return '';
+      console.error(`Image not found: ../assets/images/${title}.png`)
+      return ''
     }
   }
 
@@ -360,7 +340,7 @@ export default class VueComponent extends Vue {
     console.log({ lang: this.lang })
 
     if (localStorage.getItem('LSvoted') == 'true') {
-      this.showVotedText = true;
+      this.showVotedText = true
     }
 
     this.buildPageForURL()
@@ -385,55 +365,60 @@ export default class VueComponent extends Vue {
       OePNV: {
         description: 'S-Bahn, U-Bahn, Tram, und Bus',
         subdescriptions: {
-          base: this.yaml.descriptionInput.OePNV.subdescriptions["scenario1"],
-          dekarbonisiert: this.yaml.descriptionInput.OePNV.subdescriptions["scenario2"],
-          stark: this.yaml.descriptionInput.OePNV.subdescriptions["scenario3"],
+          base: this.yaml.descriptionInput.OePNV.subdescriptions['scenario1'],
+          dekarbonisiert: this.yaml.descriptionInput.OePNV.subdescriptions['scenario2'],
+          stark: this.yaml.descriptionInput.OePNV.subdescriptions['scenario3'],
         },
       },
       kiezblocks: {
         description: '10 km/h Tempolimit',
         subdescriptions: {
-          base: this.yaml.descriptionInput.kiezblocks.subdescriptions["scenario1"],
-          'ganze Stadt': this.yaml.descriptionInput.kiezblocks.subdescriptions["scenario2"],
+          base: this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario1'],
+          'ganze Stadt': this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario2'],
         },
       },
       Fahrrad: {
         description: 'Radinfrastruktur',
         subdescriptions: {
-          base: this.yaml.descriptionInput.Fahrrad.subdescriptions["scenario1"],
-          stark: this.yaml.descriptionInput.Fahrrad.subdescriptions["scenario2"],
+          base: this.yaml.descriptionInput.Fahrrad.subdescriptions['scenario1'],
+          stark: this.yaml.descriptionInput.Fahrrad.subdescriptions['scenario2'],
         },
       },
       Parkraum: {
         description: 'Parkende Fahrzeuge',
         subdescriptions: {
-          base: this.yaml.descriptionInput.Parkraum.subdescriptions["scenario1"],
-          BesucherFossilTeuer_alleAnderenPreiswert: this.yaml.descriptionInput.Parkraum.subdescriptions
-          ["scenario2"],
-          Besucher_teuer_Anwohner_preiswert: this.yaml.descriptionInput.Parkraum.subdescriptions
-          ["scenario3"],
-          Besucher_teuer_Anwohner_teuer: this.yaml.descriptionInput.Parkraum.subdescriptions
-          ["scenario4"],
+          base: this.yaml.descriptionInput.Parkraum.subdescriptions['scenario1'],
+          BesucherFossilTeuer_alleAnderenPreiswert: this.yaml.descriptionInput.Parkraum
+            .subdescriptions['scenario2'],
+          Besucher_teuer_Anwohner_preiswert: this.yaml.descriptionInput.Parkraum.subdescriptions[
+            'scenario3'
+          ],
+          Besucher_teuer_Anwohner_teuer: this.yaml.descriptionInput.Parkraum.subdescriptions[
+            'scenario4'
+          ],
         },
       },
       fahrenderVerkehr: {
         description: 'Fahrende Fahrzeuge',
         subdescriptions: {
-          base: this.yaml.descriptionInput.kiezblocks.subdescriptions["scenario1"],
-          mautFossil: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions["scenario2"],
-          MautFuerAlle: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions["scenario3"],
-          zeroEmissionsZone: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions["scenario4"],
-          zeroEmissionsZonePlusMaut: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions
-          ["scenario5"],
-          autofrei: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions["scenario6"],
+          base: this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario1'],
+          mautFossil: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario2'],
+          MautFuerAlle: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario3'],
+          zeroEmissionsZone: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions[
+            'scenario4'
+          ],
+          zeroEmissionsZonePlusMaut: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions[
+            'scenario5'
+          ],
+          autofrei: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario6'],
         },
       },
       DRT: {
         description: 'Digitales Rufbussystem',
         subdescriptions: {
-          base: this.yaml.descriptionInput.DRT.subdescriptions["scenario1"],
-          nurAussenbezirke: this.yaml.descriptionInput.DRT.subdescriptions["scenario2"],
-          ganzeStadt: this.yaml.descriptionInput.DRT.subdescriptions["scenario3"],
+          base: this.yaml.descriptionInput.DRT.subdescriptions['scenario1'],
+          nurAussenbezirke: this.yaml.descriptionInput.DRT.subdescriptions['scenario2'],
+          ganzeStadt: this.yaml.descriptionInput.DRT.subdescriptions['scenario3'],
         },
       },
     }
@@ -731,12 +716,11 @@ export default class VueComponent extends Vue {
   }
 
   private async saveConditions() {
-
     // localStorage.setItem('LSvoted', 'true')
 
-    this.voted = true;
-    this.showVotedText = true;
-    this.updateVoteConditions;
+    this.voted = true
+    this.showVotedText = true
+    this.updateVoteConditions
 
     for (const metric of this.metrics) {
       console.log(metric.title + ': ' + metric.value)
@@ -744,12 +728,11 @@ export default class VueComponent extends Vue {
 
     if (!localStorage.getItem('voter-cookie')) {
       this.voteConditions.cookie = this.setCookie('vote_id', 60)
-      localStorage.setItem('voter-cookie', this.voteConditions.cookie);
+      localStorage.setItem('voter-cookie', this.voteConditions.cookie)
       console.log(localStorage.getItem('voter-cookie'))
     } else {
       this.voteConditions.cookie = localStorage.getItem('voter-cookie')
     }
-
 
     // fetch('https://api.ipify.org?format=json')
     //   .then(x => x.json())
@@ -760,7 +743,7 @@ export default class VueComponent extends Vue {
     //     const vote = JSON.stringify(this.voteConditions)
     //   })
 
-    this.voteConditions.timeStamp = new Date().toLocaleString('de-DE');
+    this.voteConditions.timeStamp = new Date().toLocaleString('de-DE')
 
     // POST vote to api-server
     let tries = 0
@@ -799,18 +782,19 @@ export default class VueComponent extends Vue {
   }
 
   private setCookie(name, days) {
-    let date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    let expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + this.generateUUID() + ";" + expires + ";path=/;SameSite=Strict";
+    let date = new Date()
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+    let expires = 'expires=' + date.toUTCString()
+    document.cookie = name + '=' + this.generateUUID() + ';' + expires + ';path=/;SameSite=Strict'
     return document.cookie
   }
 
   private generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      let r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   }
   private addDescriptionToggle() {
     for (const value of Object.values(this.yaml.inputColumns)) {
@@ -960,8 +944,6 @@ li.notes-item {
   padding-left: 2em;
 }
 
-
-
 .header-description-subtitle {
   flex: 1 1 auto;
   margin: 0.5rem;
@@ -992,7 +974,6 @@ li.notes-item {
 .header-description-text {
   margin-bottom: 10;
   text-align: left;
-
 }
 
 .header-factor-description {
@@ -1032,7 +1013,6 @@ li.notes-item {
 .sounding-board-description {
   text-transform: none;
   font-size: 1.6em;
-
 }
 
 .sticky {
@@ -1047,7 +1027,6 @@ li.notes-item {
   background-color: #eee;
   padding: 1rem 2rem 2rem 2rem;
 }
-
 
 .left-results {
   width: 100%;
@@ -1424,11 +1403,10 @@ button.is-huge.factor-option.preset-buttons:hover {
   display: block;
 }
 
-#sounding-board>div.results.calc-margin {
+#sounding-board > div.results.calc-margin {
   padding: 1rem 2rem 2rem 2rem !important;
   margin-bottom: 0.5rem;
 }
-
 
 .right-results {
   height: fit-content;
@@ -1459,7 +1437,6 @@ button.is-huge.factor-option.preset-buttons:hover {
 .button.is-danger {
   background-color: #c40d1e !important;
 }
-
 
 @media only screen and (max-width: 800px) {
   .factors {
@@ -1507,8 +1484,6 @@ button.is-huge.factor-option.preset-buttons:hover {
   // .submit-button {
   //   margin-left: 5px;
   // }
-
-
 }
 
 @media only screen and (min-width: 1431px) {
@@ -1550,11 +1525,11 @@ button.is-huge.factor-option.preset-buttons:hover {
   }
 
   #car-viz-total {
-    scale: .78 !important;
+    scale: 0.78 !important;
     width: 130%;
   }
 
-  #sounding-board>div.results.calc-margin {
+  #sounding-board > div.results.calc-margin {
     margin-bottom: 0rem !important;
   }
 }
@@ -1592,8 +1567,6 @@ button.is-huge.factor-option.preset-buttons:hover {
     font-size: 1.3rem;
   }
 }
-
-
 
 @media only screen and (max-width: 1440px) {
   .factor-option {
@@ -1646,8 +1619,6 @@ button.is-huge.factor-option.preset-buttons:hover {
   }
 }
 
-
-
 @media only screen and (min-width: 1280px) {
   .factor-option {
     font-size: 0.6rem;
@@ -1677,7 +1648,6 @@ button.is-huge.factor-option.preset-buttons:hover {
     margin-top: 0.4rem;
     margin-bottom: 0;
   }
-
 
   .option-groups {
     grid-template-columns: repeat(2, 1fr);
@@ -1781,7 +1751,6 @@ button.is-huge.factor-option.preset-buttons:hover {
     margin-bottom: 0;
   }
 
-
   .right-results {
     height: fit-content;
     margin: 2rem 0 0 0;
@@ -1798,7 +1767,6 @@ button.is-huge.factor-option.preset-buttons:hover {
   .description p {
     font-size: 0.9rem;
   }
-
 }
 
 @media only screen and (max-width: 850px) {
