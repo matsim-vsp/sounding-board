@@ -361,67 +361,23 @@ export default class VueComponent extends Vue {
     this.buildPresets()
     this.setInitialValues()
     this.updateValues()
-    this.textBlocks = {
-      OePNV: {
-        description: 'S-Bahn, U-Bahn, Tram, und Bus',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.OePNV.subdescriptions['scenario1'],
-          dekarbonisiert: this.yaml.descriptionInput.OePNV.subdescriptions['scenario2'],
-          stark: this.yaml.descriptionInput.OePNV.subdescriptions['scenario3'],
-        },
-      },
-      kiezblocks: {
-        description: '10 km/h Tempolimit',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario1'],
-          'ganze Stadt': this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario2'],
-        },
-      },
-      Fahrrad: {
-        description: 'Radinfrastruktur',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.Fahrrad.subdescriptions['scenario1'],
-          stark: this.yaml.descriptionInput.Fahrrad.subdescriptions['scenario2'],
-        },
-      },
-      Parkraum: {
-        description: 'Parkende Fahrzeuge',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.Parkraum.subdescriptions['scenario1'],
-          BesucherFossilTeuer_alleAnderenPreiswert: this.yaml.descriptionInput.Parkraum
-            .subdescriptions['scenario2'],
-          Besucher_teuer_Anwohner_preiswert: this.yaml.descriptionInput.Parkraum.subdescriptions[
-            'scenario3'
-          ],
-          Besucher_teuer_Anwohner_teuer: this.yaml.descriptionInput.Parkraum.subdescriptions[
-            'scenario4'
-          ],
-        },
-      },
-      fahrenderVerkehr: {
-        description: 'Fahrende Fahrzeuge',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.kiezblocks.subdescriptions['scenario1'],
-          mautFossil: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario2'],
-          MautFuerAlle: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario3'],
-          zeroEmissionsZone: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions[
-            'scenario4'
-          ],
-          zeroEmissionsZonePlusMaut: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions[
-            'scenario5'
-          ],
-          autofrei: this.yaml.descriptionInput.fahrenderVerkehr.subdescriptions['scenario6'],
-        },
-      },
-      DRT: {
-        description: 'Digitales Rufbussystem',
-        subdescriptions: {
-          base: this.yaml.descriptionInput.DRT.subdescriptions['scenario1'],
-          nurAussenbezirke: this.yaml.descriptionInput.DRT.subdescriptions['scenario2'],
-          ganzeStadt: this.yaml.descriptionInput.DRT.subdescriptions['scenario3'],
-        },
-      },
-    }
+
+
+    // Dynamic loading of text Blocks from Yaml :)
+
+    Object.keys(this.yaml.descriptionInput).forEach((category: any) => {
+
+      this.textBlocks[category] = {
+        description: this.yaml.descriptionInput[category].description,
+        subdescriptions: {}
+      }
+
+      Object.keys(this.yaml.descriptionInput[category].subdescriptions).forEach((scenario: any) => {
+        this.textBlocks[category]['subdescriptions'][scenario] = this.yaml.descriptionInput[category].subdescriptions[scenario]
+      });
+
+    });
+
   }
 
   // private parseMarkdown(text: string) {
@@ -790,7 +746,7 @@ export default class VueComponent extends Vue {
   }
 
   private generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       let r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8
       return v.toString(16)
@@ -1406,7 +1362,7 @@ button.is-huge.factor-option.preset-buttons:hover {
   display: block;
 }
 
-#sounding-board > div.results.calc-margin {
+#sounding-board>div.results.calc-margin {
   padding: 1rem 2rem 2rem 2rem !important;
   margin-bottom: 0.5rem;
 }
@@ -1532,7 +1488,7 @@ button.is-huge.factor-option.preset-buttons:hover {
     width: 130%;
   }
 
-  #sounding-board > div.results.calc-margin {
+  #sounding-board>div.results.calc-margin {
     margin-bottom: 0rem !important;
   }
 }
