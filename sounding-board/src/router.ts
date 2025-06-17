@@ -25,7 +25,7 @@ const routes = [
   {
     // catch-all back to home page
     path: '/',
-    redirect: '/current/config',
+    redirect: '/berlin/config',
   },
 ]
 
